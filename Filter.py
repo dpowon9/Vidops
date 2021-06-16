@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 
 path = r"Butterfly Flying Away From A Flower.mp4"
+path2 = 'blurred.avi'
 
 
-def play(mode, capture=False, save=False, path_to_save=None, f=(400, 400)):
+def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400)):
     """
     :param f: Default size of 400 by 400
     :param path_to_save: path to save video frames
@@ -45,7 +46,7 @@ def play(mode, capture=False, save=False, path_to_save=None, f=(400, 400)):
                 # Display the resulting frame
                 cv2.imshow('Frame', res)
                 # Press Q on keyboard to exit
-                if cv2.waitKey(25) & 0xFF == ord('q'):
+                if cv2.waitKey(1) & 0xFF == ord('q'):
                     if capture:
                         cv2.imwrite(path_to_save + '/' + 'capture.jpg', res)
                         print('Photo captured!! \n', path_to_save + '/' + 'capture.jpg')
@@ -75,7 +76,6 @@ def blur(mode, percent, vid_out='blurred.avi'):
     :return: Video with median blur applied and saved
     """
     cappy = cv2.VideoCapture(mode)
-    print('VidCapture object status:', cappy.isOpened())
     if not cappy.isOpened():
         print("Error opening video file")
         exit()
@@ -94,7 +94,6 @@ def blur(mode, percent, vid_out='blurred.avi'):
     count = 0
     while cappy.isOpened():
         ret, frame = cappy.read()
-        # frame = cv2.resize(frame, f)
         if ret:
             frame2 = cv2.medianBlur(frame, percent)
             # Display the resulting frame
@@ -116,4 +115,60 @@ def blur(mode, percent, vid_out='blurred.avi'):
     cv2.destroyAllWindows()
 
 
-blur(path, 35)
+def play_multiple(*args, size=(400, 400)):
+    """
+    :param args: Videos  to play
+    :param size: Size of video windows
+    :return: Plays videos side by side
+    """
+    # Create a video capture object
+    try:
+        caps = [cv2.VideoCapture(i) for i in args]
+        window_titles = [str(i) for i in range(len(args))]
+    except Exception:
+        # If a list is passed in it will unpack the list
+        caps = [cv2.VideoCapture(i) for i in args[0]]
+        window_titles = [str(i) for i in range(len(args[0]))]
+    length = []
+    print('Number of videos: %d' % len(caps))
+    for i, cap in enumerate(caps):
+        if not cap.isOpened():
+            print("Error opening video %d stream or file" % i)
+        # Get the number of frames in all videos
+        length.append(int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
+    print('The longest input video has %d frames.' % max(length))
+    # preallocating
+    frames = [None] * len(caps)
+    ret = [None] * len(caps)
+    count = 1
+    # Adjusting locations on the monitor where the videos will play
+    # This is to ensure they will not overlap
+    # They will be displayed side by side horizontally
+    x, y = 100, 100
+    for i in range(len(window_titles)):
+        cv2.namedWindow(window_titles[i])
+        cv2.moveWindow(window_titles[i], x, y)
+        x += size[0]+20
+    while True:
+        for i, c in enumerate(caps):
+            if c is not None:
+                ret[i], frames[i] = c.read()
+                frames[i] = cv2.resize(frames[i], size)
+        for i, f in enumerate(frames):
+            if ret[i] is True:
+                cv2.imshow(window_titles[i], f)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+        count += 1
+        if count >= max(length):
+            print('Max frames played!')
+            break
+    for c in caps:
+        if c is not None:
+            c.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    paths = [path, path2]
+    play_multiple(paths)
