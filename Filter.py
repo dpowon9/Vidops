@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 
 path = r"Butterfly Flying Away From A Flower.mp4"
-path2 = 'blurred.avi'
+path2 = 'blurred.mp4'
+path3 = 'unblurred1.mp4'
+path4 = 'unblurred2.mp4'
 
 
 def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400)):
@@ -68,12 +70,15 @@ def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400
     cv2.destroyAllWindows()
 
 
-def blur(mode, percent, vid_out='blurred.avi'):
+def blur_ops(mode, vid_out, percent=35, blur=False, unblur=False, method=1):
     """
-    :param percent: Blur percentage desired
+    :param method: Unblurring technique
+    :param unblur: Remove blur
+    :param blur: Add blur
+    :param percent: Blur percentage desired, default is 35%
     :param mode: Video path to blur or 0 to turn on camera 1 and blur video captured
     :param vid_out: Output blurred video
-    :return: Video with median blur applied and saved
+    :return: Video with median blur applied and saved or a blur removed
     """
     cappy = cv2.VideoCapture(mode)
     if not cappy.isOpened():
@@ -89,16 +94,28 @@ def blur(mode, percent, vid_out='blurred.avi'):
     frame_width = int(cappy.get(3))
     frame_height = int(cappy.get(4))
     # define codec and create VideoWriter object
-    out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 30,
+    out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), 30,
                           (frame_width, frame_height))
     count = 0
     while cappy.isOpened():
         ret, frame = cappy.read()
         if ret:
-            frame2 = cv2.medianBlur(frame, percent)
-            # Display the resulting frame
-            out.write(frame2)
-            cv2.imshow('Frame', frame2)
+            if blur:
+                frame2 = cv2.medianBlur(frame, percent)
+                # Display the resulting frame
+                out.write(frame2)
+                cv2.imshow('Frame', frame2)
+            elif unblur:
+                if method == 1:
+                    kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+                    frame_un = cv2.filter2D(frame, -1, kernel)
+                    out.write(frame_un)
+                    # cv2.imshow("Frame", frame_un)
+                elif method == 2:
+                    frame_un2 = cv2.addWeighted(frame, 4, cv2.blur(frame, (30, 30)), -4, 128)
+                    cv2.imshow("Add_weighted", frame_un2)
+                    out.write(frame_un2)
+                    cv2.imshow("Frame", frame_un2)
             # press `q` to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print('(Q) pressed exiting...')
@@ -115,7 +132,7 @@ def blur(mode, percent, vid_out='blurred.avi'):
     cv2.destroyAllWindows()
 
 
-def play_multiple(*args, size=(400, 400)):
+def play_multiple(*args, size=(300, 300)):
     """
     :param args: Videos  to play
     :param size: Size of video windows
@@ -144,11 +161,11 @@ def play_multiple(*args, size=(400, 400)):
     # Adjusting locations on the monitor where the videos will play
     # This is to ensure they will not overlap
     # They will be displayed side by side horizontally
-    x, y = 100, 100
+    x, y = 0, 100
     for i in range(len(window_titles)):
         cv2.namedWindow(window_titles[i])
         cv2.moveWindow(window_titles[i], x, y)
-        x += size[0]+20
+        x += size[0] + 30
     while True:
         for i, c in enumerate(caps):
             if c is not None:
@@ -170,5 +187,6 @@ def play_multiple(*args, size=(400, 400)):
 
 
 if __name__ == '__main__':
-    paths = [path, path2]
+    # blur_ops(path2, 'unblur.mp4' , unblur=True, method=1)
+    paths = [path, path2, path3, path4]
     play_multiple(paths)
