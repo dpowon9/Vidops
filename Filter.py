@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
+from scipy.signal.signaltools import wiener
 
 path = r"Butterfly Flying Away From A Flower.mp4"
-path2 = 'blurred.mp4'
-path3 = 'unblurred1.mp4'
-path4 = 'unblurred2.mp4'
+Test = r"pexels-roman-odintsov-6813530.mp4"
+res = 'unblur_pex.mp4'
+res1 = 'unblur_pex2.mp4'
 
 
 def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400)):
@@ -63,16 +64,12 @@ def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400
         if length != -1:
             if count >= length:
                 break
-    # When everything done, release
-    # the video capture object
     cap.release()
-    # Closes all the frames
     cv2.destroyAllWindows()
 
 
-def blur_ops(mode, vid_out, percent=35, blur=False, unblur=False, method=1):
+def blur_ops(mode, vid_out, percent=35, blur=False, unblur=False):
     """
-    :param method: Unblurring technique
     :param unblur: Remove blur
     :param blur: Add blur
     :param percent: Blur percentage desired, default is 35%
@@ -96,26 +93,18 @@ def blur_ops(mode, vid_out, percent=35, blur=False, unblur=False, method=1):
     # define codec and create VideoWriter object
     out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), 30,
                           (frame_width, frame_height))
+    ring = np.random.default_rng()
     count = 0
     while cappy.isOpened():
         ret, frame = cappy.read()
         if ret:
             if blur:
                 frame2 = cv2.medianBlur(frame, percent)
-                # Display the resulting frame
                 out.write(frame2)
-                cv2.imshow('Frame', frame2)
             elif unblur:
-                if method == 1:
-                    kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
-                    frame_un = cv2.filter2D(frame, -1, kernel)
-                    out.write(frame_un)
-                    # cv2.imshow("Frame", frame_un)
-                elif method == 2:
-                    frame_un2 = cv2.addWeighted(frame, 4, cv2.blur(frame, (30, 30)), -4, 128)
-                    cv2.imshow("Add_weighted", frame_un2)
-                    out.write(frame_un2)
-                    cv2.imshow("Frame", frame_un2)
+                kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+                frame_un = cv2.filter2D(frame, -1, kernel)
+                out.write(frame_un)
             # press `q` to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 print('(Q) pressed exiting...')
@@ -128,7 +117,6 @@ def blur_ops(mode, vid_out, percent=35, blur=False, unblur=False, method=1):
             if count >= length:
                 break
     cappy.release()
-    # Closes all the frames
     cv2.destroyAllWindows()
 
 
@@ -187,6 +175,5 @@ def play_multiple(*args, size=(300, 300)):
 
 
 if __name__ == '__main__':
-    # blur_ops(path2, 'unblur.mp4' , unblur=True, method=1)
-    paths = [path, path2, path3, path4]
-    play_multiple(paths)
+    blur_ops(res, 'unblur_pex2.mp4', unblur=True)
+    play_multiple(Test, res, res1)
