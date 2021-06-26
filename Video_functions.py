@@ -1,6 +1,4 @@
 import cv2
-import numpy as np
-from scipy.signal.signaltools import wiener
 from Image_functions import blur_meth
 
 

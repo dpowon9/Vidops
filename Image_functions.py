@@ -1,6 +1,4 @@
 import cv2
-import numpy as np
-from scipy.signal.signaltools import wiener
 
 
 def blur_meth(array, Method, percent=35, sigma=3, box=(5, 5), fill=(15, 75, 75)):
