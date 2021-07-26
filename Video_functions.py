@@ -1,5 +1,31 @@
 import cv2
-from Image_functions import blur_meth
+
+
+def blur_meth(array, Method, percent=35, sigma=3, box=(5, 5), fill=(15, 75, 75)):
+    """
+    :param Method: Blurring Method
+    :param fill: Bilateral filter parameters, default is (15, 75, 75)
+    :param box: Averaging desired kernel size, default is (5, 5)
+    :param array: Input image array
+    :param percent: Percent of median blur to apply, default is 35
+    :param sigma: Standard deviation of the gaussian kernel, the kernel size is 3*sigma in all directions, i.e 2*3*sigma
+    :return: Smoothed out image
+    """
+    if not Method.isupper():
+        Method = Method.upper()
+    if Method == 'MEDIAN':
+        out = cv2.medianBlur(array, percent)
+    elif Method == 'GAUSSIAN':
+        size = (6 * sigma, 6 * sigma)
+        out = cv2.GaussianBlur(array, size, sigma)
+    elif Method == 'AVERAGING':
+        out = cv2.blur(array, box)
+    elif Method == 'BILATERAL':
+        d, s1, s2 = fill
+        out = cv2.bilateralFilter(array, d, s1, s2)
+    else:
+        out = None
+    return out
 
 
 def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400)):
@@ -66,9 +92,9 @@ def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400
     cv2.destroyAllWindows()
 
 
-def smooth(mode, vid_out, Methods='Median'):
+def smooth(mode, vid_out, percent=45):
     """
-    :param Methods: Edit methods for blurring
+    :param percent: Percent of median blur to apply, default is 45
     :param mode: Video path to blur or 0 to turn on camera 1 and blur video captured
     :param vid_out: Output blurred video
     :return: Video with median blur applied and saved or a blur removed
@@ -93,7 +119,7 @@ def smooth(mode, vid_out, Methods='Median'):
     while cappy.isOpened():
         ret, frame = cappy.read()
         if ret:
-            frame2 = blur_meth(frame, Method=Methods)
+            frame2 = cv2.medianBlur(frame, percent)
             out.write(frame2)
             # press `q` to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):

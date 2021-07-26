@@ -4,5 +4,5 @@ image_path = r"C:\Users\Dennis Pkemoi\Downloads\scott-umstattd-lmClF825VYI-unspl
 direc = r"C:\Users\Dennis Pkemoi\Pictures\Python_practice"
 save_path = direc + '/smoothed.mp4'
 
-smooth(video_path, save_path, Methods='bilateral')
+smooth(video_path, save_path)
 play_multiple(video_path, save_path)
