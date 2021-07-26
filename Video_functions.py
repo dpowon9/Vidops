@@ -92,9 +92,9 @@ def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400
     cv2.destroyAllWindows()
 
 
-def smooth(mode, vid_out, percent=45):
+def smooth(mode, vid_out, sigma=3):
     """
-    :param percent: Percent of median blur to apply, default is 45
+    :param sigma:Standard deviation of the gaussian kernel, the kernel size is 3*sigma in all directions, i.e 2*3*sigma
     :param mode: Video path to blur or 0 to turn on camera 1 and blur video captured
     :param vid_out: Output blurred video
     :return: Video with median blur applied and saved or a blur removed
@@ -119,7 +119,12 @@ def smooth(mode, vid_out, percent=45):
     while cappy.isOpened():
         ret, frame = cappy.read()
         if ret:
-            frame2 = cv2.medianBlur(frame, percent)
+            size = (6 * sigma, 6 * sigma)
+            if int(size[0] / 2) or int(size[1] / 2):
+                if count == 0:
+                    print('Size = ' + str(size) + '  Size must be odd adding 1')
+                size = (size[0] + 1, size[1] + 1)
+            frame2 = cv2.GaussianBlur(frame, size, sigma)
             out.write(frame2)
             # press `q` to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
