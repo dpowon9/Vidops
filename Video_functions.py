@@ -92,7 +92,7 @@ def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400
     cv2.destroyAllWindows()
 
 
-def smooth(mode, vid_out, sigma=3):
+def smooth(mode, vid_out, sigma=20):
     """
     :param sigma:Standard deviation of the gaussian kernel, the kernel size is 3*sigma in all directions, i.e 2*3*sigma
     :param mode: Video path to blur or 0 to turn on camera 1 and blur video captured
