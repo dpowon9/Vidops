@@ -7,6 +7,9 @@ import time
 import PIL.Image as Pimg
 from numpy import asarray
 import numpy as np
+import warnings
+
+warnings.filterwarnings("ignore")
 
 
 def make_generator_model():
@@ -70,14 +73,14 @@ def train_step(blurred_images, images):
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
 
-def train(train_dataset, label_dataset, epochs):
+def train(train_dataset, label_dataset, seed, epochs):
     for epoch in range(epochs):
         start = time.time()
         for image_batch, label_batch in zip(train_dataset, label_dataset):
             train_step(image_batch, label_batch)
             # Produce images for the GIF as you go
         display.clear_output(wait=True)
-        generate_and_save_images(generator, epoch + 1, train_dataset[0])
+        generate_and_save_images(generator, epoch + 1, seed)
         # Save the model every 15 epochs
         if (epoch + 1) % 15 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
@@ -91,7 +94,8 @@ def generate_and_save_images(model, epoch, test_input):
         plt.subplot()
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
         plt.axis('off')
-    plt.savefig(r"C:\Users\Dennis Pkemoi\Desktop\VidopsMemBank\Epoch_Images"+'/'+'image_at_epoch_{:04d}.png'.format(epoch))
+    plt.savefig(
+        r"C:\Users\Dennis Pkemoi\Desktop\VidopsMemBank\Epoch_Images" + '/' + 'image_at_epoch_{:04d}.png'.format(epoch))
     plt.close()
 
 
@@ -118,5 +122,6 @@ if __name__ == "__main__":
                     i in os.listdir(sharp_path)]
     blurred_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
     sharp_dataset = tf.data.Dataset.from_tensor_slices(label_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
-
-    train(blurred_dataset, sharp_dataset, EPOCHS)
+    test = (asarray(Pimg.open(blurred_path + '/' + os.listdir(blurred_path)[0]).resize((128, 128)),
+                    dtype=np.float32) - 127.5) / 127.5
+    train(blurred_dataset, sharp_dataset, test.reshape(1, 128, 128, 3), EPOCHS)
