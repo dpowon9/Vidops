@@ -1,6 +1,5 @@
 import tensorflow as tf
 from tensorflow.keras import layers
-import matplotlib.pyplot as plt
 import os
 from IPython import display
 import time
@@ -17,17 +16,13 @@ def make_generator_model():
     model.add(layers.Dense(3, use_bias=False, input_shape=(128, 128, 3)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
-
     model.add(layers.Conv2DTranspose(3, (5, 5), strides=(1, 1), padding='same', use_bias=False))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
-
     model.add(layers.Conv2DTranspose(3, (5, 5), strides=(1, 1), padding='same', use_bias=False))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
-
     model.add(layers.Conv2DTranspose(3, (5, 5), strides=(1, 1), padding='same', use_bias=False, activation='tanh'))
-
     return model
 
 
@@ -59,8 +54,7 @@ def generator_loss(fake_output):
 
 
 @tf.function
-def train_step(blurred_images, images):
-    noise = blurred_images
+def train_step(noise, images):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         generated_images = generator(noise, training=True)
         real_output = discriminator(images, training=True)
@@ -76,9 +70,8 @@ def train_step(blurred_images, images):
 def train(train_dataset, label_dataset, seed, epochs):
     for epoch in range(epochs):
         start = time.time()
-        for image_batch, label_batch in zip(train_dataset, label_dataset):
-            train_step(image_batch, label_batch)
-            # Produce images for the GIF as you go
+        for train_batch, label_batch in zip(train_dataset, label_dataset):
+            train_step(train_batch, label_batch)
         display.clear_output(wait=True)
         generate_and_save_images(generator, epoch + 1, seed)
         # Save the model every 15 epochs
@@ -89,14 +82,9 @@ def train(train_dataset, label_dataset, seed, epochs):
 
 def generate_and_save_images(model, epoch, test_input):
     predictions = model(test_input, training=False)
-    fig = plt.figure(figsize=(4, 4))
-    for i in range(predictions.shape[0]):
-        plt.subplot()
-        plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
-        plt.axis('off')
-    plt.savefig(
-        r"C:\Users\Dennis Pkemoi\Desktop\VidopsMemBank\Epoch_Images" + '/' + 'image_at_epoch_{:04d}.png'.format(epoch))
-    plt.close()
+    path = r"C:\Users\Dennis Pkemoi\Desktop\VidopsMemBank\Epoch_Images" + '/' + 'image_at_epoch_{:04d}.jpg'.format(
+        epoch)
+    tf.keras.preprocessing.image.save_img(path, predictions[0] * 127.5 + 127.5, data_format='channels_last')
 
 
 if __name__ == "__main__":
@@ -124,4 +112,5 @@ if __name__ == "__main__":
     sharp_dataset = tf.data.Dataset.from_tensor_slices(label_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
     test = (asarray(Pimg.open(blurred_path + '/' + os.listdir(blurred_path)[0]).resize((128, 128)),
                     dtype=np.float32) - 127.5) / 127.5
+    print('Test image:', os.listdir(blurred_path)[0])
     train(blurred_dataset, sharp_dataset, test.reshape(1, 128, 128, 3), EPOCHS)
