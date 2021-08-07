@@ -57,7 +57,7 @@ def generator_loss(fake_output):
 def train_step(noise, images):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         generated_images = generator(noise, training=True)
-        real_output = discriminator(images, training=True)
+        real_output = discriminator(images, training=False)
         fake_output = discriminator(generated_images, training=True)
         gen_loss = generator_loss(fake_output)
         disc_loss = discriminator_loss(real_output, fake_output)
