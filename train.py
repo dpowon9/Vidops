@@ -113,7 +113,6 @@ def gradient_penalty_loss(y_pred, averaged_samples):
 
 def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
     data = load_images(blurred, sharp, n_images)
-    print(data)
     y_train, x_train = data['B'], data['A']
 
     g = generator_model()
