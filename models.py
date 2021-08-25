@@ -1,14 +1,13 @@
 import tensorflow as tf
-from keras.layers import Input, Activation, Add, UpSampling2D
+from tensorflow.keras.layers import Input, Activation, Add, UpSampling2D
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.convolutional import Conv2D
 from keras.layers.core import Dense, Flatten, Lambda
-from keras.layers.normalization import BatchNormalization
-from keras.models import Model
-from keras.engine.topology import Layer
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Layer, InputSpec
 from keras.utils import conv_utils
 from keras.layers.core import Dropout
-from keras.engine import InputSpec
 from tensorflow.keras.backend import image_data_format
 import keras.backend as K
 
