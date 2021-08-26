@@ -194,7 +194,7 @@ class GAN:
     def deblur_dir(self):
         self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
         self.input_dir = self.file_Gui('Images to deblur')
-        self.save_dir = self.file_Gui('deblurred images')
+        self.save_dir = self.file_Gui('save deblurred images')
         g = generator_model()
         g.load_weights(self.Path_to_weights)
         for image_name in os.listdir(self.input_dir):
