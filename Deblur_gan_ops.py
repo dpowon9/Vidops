@@ -2,7 +2,6 @@ import os
 import random
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-from keras.callbacks import TensorBoard
 from tensorflow.keras.optimizers import Adam
 import datetime
 import numpy as np
@@ -34,31 +33,27 @@ class GAN:
         self.limiter = limiter
 
     @staticmethod
-    def file_Gui(file_type, directory=True, multi=False):
+    def file_Gui(file_type, ext=None, directory=True, multi=False):
         base = Tk()
         base.withdraw()
         base.geometry("150x150")
         if not directory:
             if multi:
-                filepath = filedialog.askopenfilenames(title="Select {} files".format(file_type))
+                filepath = filedialog.askopenfilenames(title="Select {} files".format(file_type),
+                                                       filetypes=(("{} file".format(file_type), '*.{}'.format(ext)),
+                                                                  ("All files", '*.*')))
                 base.destroy()
                 return list(filepath)
             else:
-                filepath = filedialog.askopenfilename(title="Select {} file".format(file_type))
+                filepath = filedialog.askopenfilename(title="Select {} file".format(file_type),
+                                                      filetypes=(("{} file".format(file_type), '*.{}'.format(ext)),
+                                                                 ("All files", '*.*')))
                 base.destroy()
                 return filepath
         else:
             dir_path = filedialog.askdirectory(title="Select {} directory".format(file_type))
             base.destroy()
             return dir_path
-
-    @staticmethod
-    def is_an_image_file(filename):
-        IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg']
-        for ext in IMAGE_EXTENSIONS:
-            if ext in filename:
-                return True
-        return False
 
     @staticmethod
     def list_image_files(directory):
@@ -111,6 +106,7 @@ class GAN:
         }
 
     def save_all_weights(self, d, g, epoch_number, current_loss):
+        self.BASE_DIR = self.file_Gui('Save Weights')
         now = datetime.datetime.now()
         save_dir = os.path.join(self.BASE_DIR, '{}{}'.format(now.month, now.day))
         if not os.path.exists(save_dir):
@@ -132,7 +128,7 @@ class GAN:
         y_train, x_train = data['B'], data['A']
         g = generator_model()
         if pretrained:
-            self.Path_to_weights = self.file_Gui('Pretrained model', directory=False)
+            self.Path_to_weights = self.file_Gui('Pretrained model', ext='h5', directory=False)
             g.load_weights(self.Path_to_weights)
         d = discriminator_model()
         d_on_g = generator_containing_discriminator_multiple_outputs(g, d)
@@ -146,8 +142,6 @@ class GAN:
         d.trainable = True
         # Creating fakes
         output_true_batch, output_false_batch = np.ones((batch_size, 1)), -np.ones((batch_size, 1))
-        log_path = './logs'
-        tensorboard_callback = TensorBoard(log_path)
         print("Starting Training:")
         for epoch in tqdm.tqdm(range(epoch_num)):
             permutated_indexes = np.random.permutation(x_train.shape[0])
@@ -178,7 +172,8 @@ class GAN:
                 self.save_all_weights(d, g, epoch, int(np.mean(d_on_g_losses)))
 
     def test(self, batch_size):
-        self.Path_to_weights = self.file_Gui('Pretrained model', directory=False)
+        self.Path_to_weights = self.file_Gui('Pretrained model', ext='h5', directory=False)
+        self.save_dir = self.file_Gui('Test Results')
         data = self.load_images()
         y_test, x_test = data['B'], data['A']
         g = generator_model()
@@ -194,10 +189,10 @@ class GAN:
             img = generated[i, :, :, :]
             output = np.concatenate((y, x, img), axis=1)
             im = PIL.Image.fromarray(output.astype(np.uint8))
-            im.save('results{}.png'.format(i))
+            im.save(os.path.join(self.save_dir, 'results{}.png'.format(i)))
 
     def deblur_dir(self):
-        self.Path_to_weights = self.file_Gui('Model', directory=False)
+        self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
         self.input_dir = self.file_Gui('Images to deblur')
         self.save_dir = self.file_Gui('deblurred images')
         g = generator_model()
@@ -215,13 +210,16 @@ class GAN:
                 im = PIL.Image.fromarray(output.astype(np.uint8))
                 im.save(os.path.join(self.save_dir, image_name))
 
-    def deblur_image(self):
-        self.Path_to_weights = self.file_Gui('Model', directory=False)
+    def deblur_image(self, save=True):
+        self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
         g = generator_model()
         g.load_weights(self.Path_to_weights)
-        path = self.file_Gui('Image to deblur', directory=False)
+        path = self.file_Gui('Image to deblur', ext='jpg', directory=False)
         image = np.array([self.preprocess_image(self.load_image(path))])
         prelim = g.predict(image)
         result = self.deprocess_image(prelim)
         im = PIL.Image.fromarray(result[0, :, :, :])
-        im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
+        if save:
+            im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
+        else:
+            im.show()
