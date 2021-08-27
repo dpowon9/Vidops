@@ -1,5 +1,6 @@
 import os
 import random
+import cv2
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from tensorflow.keras.optimizers import Adam
@@ -29,7 +30,7 @@ class GAN:
         self.Path_to_weights = None
         self.save_dir = None
         self.input_dir = None
-        self.RESHAPE = (256, 256)
+        self.RESHAPE = (256, 256, 3)
         self.limiter = limiter
 
     @staticmethod
@@ -67,7 +68,7 @@ class GAN:
         return img
 
     def preprocess_image(self, cv_img):
-        cv_img = cv_img.resize(self.RESHAPE)
+        cv_img = np.resize(cv_img, self.RESHAPE)
         img = np.array(cv_img)
         img = (img - 127.5) / 127.5
         return img
@@ -210,7 +211,7 @@ class GAN:
                 im = PIL.Image.fromarray(output.astype(np.uint8))
                 im.save(os.path.join(self.save_dir, image_name))
 
-    def deblur_image(self, save=True):
+    def deblur_image(self, save=False, show=False):
         self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
         g = generator_model()
         g.load_weights(self.Path_to_weights)
@@ -221,5 +222,44 @@ class GAN:
         im = PIL.Image.fromarray(result[0, :, :, :])
         if save:
             im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
-        else:
+        elif show:
             im.show()
+        else:
+            return result
+
+    def video_deblur(self, mode, vid_out):
+        self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
+        g = generator_model()
+        g.load_weights(self.Path_to_weights)
+        cappy = cv2.VideoCapture(mode)
+        if not cappy.isOpened():
+            print("Error opening video file")
+            exit()
+        # Get the total number of frames
+        length = int(cappy.get(cv2.CAP_PROP_FRAME_COUNT))
+        print('The input video has %d frames.' % length)
+        # Get video speed in frames per second
+        speed = int(cappy.get(cv2.CAP_PROP_FPS))
+        print('The input video plays at %d fps.' % speed)
+        # Read until video is completed
+        frame_width = int(cappy.get(3))
+        frame_height = int(cappy.get(4))
+        # define codec and create VideoWriter object
+        out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), 30,
+                              (frame_width, frame_height))
+        count = 0
+        while cappy.isOpened():
+            ret, frame = cappy.read()
+            if ret:
+                image = np.array([self.preprocess_image(np.array(frame))])
+                prelim = g.predict(image)
+                frame2 = self.deprocess_image(prelim)
+                out.write(frame2[0, :, :, :])
+            else:
+                print("Can't receive frame (stream end?). Exiting ...")
+                break
+            count += 1
+            if length != -1:
+                if count >= length:
+                    break
+        cappy.release()
