@@ -30,7 +30,7 @@ class GAN:
         self.Path_to_weights = None
         self.save_dir = None
         self.input_dir = None
-        self.RESHAPE = (256, 256, 3)
+        self.RESHAPE = (256, 256)
         self.limiter = limiter
 
     @staticmethod
@@ -68,7 +68,7 @@ class GAN:
         return img
 
     def preprocess_image(self, cv_img):
-        cv_img = np.resize(cv_img, self.RESHAPE)
+        cv_img = cv_img.resize(self.RESHAPE)
         img = np.array(cv_img)
         img = (img - 127.5) / 127.5
         return img
@@ -227,8 +227,9 @@ class GAN:
         else:
             return result
 
-    def video_deblur(self, mode, vid_out):
+    def video_deblur(self, vid_out):
         self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
+        mode = self.file_Gui('Blurred Video', ext='mp4', directory=False)
         g = generator_model()
         g.load_weights(self.Path_to_weights)
         cappy = cv2.VideoCapture(mode)
@@ -251,10 +252,16 @@ class GAN:
         while cappy.isOpened():
             ret, frame = cappy.read()
             if ret:
-                image = np.array([self.preprocess_image(np.array(frame))])
+                frame = PIL.Image.fromarray(frame)
+                image = np.array([self.preprocess_image(frame)])
                 prelim = g.predict(image)
                 frame2 = self.deprocess_image(prelim)
-                out.write(frame2[0, :, :, :])
+                im = cv2.resize(frame2[0, :, :, :], (frame_width, frame_height))
+                out.write(im)
+                # press `q` to exit
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    print('(Q) pressed exiting...')
+                    break
             else:
                 print("Can't receive frame (stream end?). Exiting ...")
                 break
@@ -263,3 +270,5 @@ class GAN:
                 if count >= length:
                     break
         cappy.release()
+        out.release()
+        cv2.destroyAllWindows()
