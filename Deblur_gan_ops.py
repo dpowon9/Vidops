@@ -15,6 +15,7 @@ from models import generator_model, discriminator_model, generator_containing_di
 import PIL
 from tkinter import *
 from tkinter import filedialog
+from Video_functions import play_multiple
 
 
 class GAN:
@@ -227,9 +228,11 @@ class GAN:
         else:
             return result
 
-    def video_deblur(self, vid_out):
+    def video_deblur(self, play=True):
         self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
         mode = self.file_Gui('Blurred Video', ext='mp4', directory=False)
+        path, name = os.path.split(mode)
+        vid_out = os.path.join(path, "GAN_Sharpened_{}_{}.mp4".format(random.randint(0, 100), name))
         g = generator_model()
         g.load_weights(self.Path_to_weights)
         cappy = cv2.VideoCapture(mode)
@@ -249,6 +252,7 @@ class GAN:
         out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), 30,
                               (frame_width, frame_height))
         count = 0
+        prog_bar = tqdm.tqdm(total=length+1)
         while cappy.isOpened():
             ret, frame = cappy.read()
             if ret:
@@ -258,6 +262,7 @@ class GAN:
                 frame2 = self.deprocess_image(prelim)
                 im = cv2.resize(frame2[0, :, :, :], (frame_width, frame_height))
                 out.write(im)
+                prog_bar.update(1)
                 # press `q` to exit
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     print('(Q) pressed exiting...')
@@ -269,6 +274,9 @@ class GAN:
             if length != -1:
                 if count >= length:
                     break
+        prog_bar.close()
         cappy.release()
         out.release()
         cv2.destroyAllWindows()
+        if play:
+            play_multiple(mode, vid_out)

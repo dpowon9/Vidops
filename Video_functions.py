@@ -92,8 +92,9 @@ def play_process(mode, capture=False, save=False, path_to_save=None, f=(400, 400
     cv2.destroyAllWindows()
 
 
-def smooth(mode, vid_out, sigma=20):
+def smooth(mode, vid_out, play=True, sigma=20):
     """
+    :param play: Play videos side by side
     :param sigma:Standard deviation of the gaussian kernel, the kernel size is 3*sigma in all directions, i.e 2*3*sigma
     :param mode: Video path to blur or 0 to turn on camera 1 and blur video captured
     :param vid_out: Output blurred video
@@ -139,6 +140,8 @@ def smooth(mode, vid_out, sigma=20):
                 break
     cappy.release()
     cv2.destroyAllWindows()
+    if play:
+        play_multiple(mode, vid_out)
 
 
 def play_multiple(*args, size=(300, 300)):
