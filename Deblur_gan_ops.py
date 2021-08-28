@@ -252,7 +252,7 @@ class GAN:
         out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), 30,
                               (frame_width, frame_height))
         count = 0
-        prog_bar = tqdm.tqdm(total=length+1)
+        prog_bar = tqdm.tqdm(total=length)
         while cappy.isOpened():
             ret, frame = cappy.read()
             if ret:
