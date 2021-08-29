@@ -4,3 +4,5 @@ Epoch: 0 Discriminator loss: -0.2837116461992264 Model loss:1619.8644217848778
 Epoch: 1 Discriminator loss: -0.47178220096626317 Model loss:1472.0525376319886
 Epoch: 1 Discriminator loss: -0.2893514910340309 Model loss:1567.857517449061
 Epoch: 2 Discriminator loss: -0.48700078278779985 Model loss:1448.4869282643
+Epoch: 1 Discriminator loss: -0.31972885578870774 Model loss: 2899.557487388452
+Epoch: 2 Discriminator loss: -0.4701332936063409 Model loss: 2122.4497006654738

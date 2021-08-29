@@ -251,8 +251,8 @@ class GAN:
                 d_on_g_losses.append(d_on_g_loss)
                 d.trainable = True
             with open('log.txt', 'a+') as f:
-                f.write('Epoch: {} Discriminator loss: {} Model loss:{}\n'.format(epoch, np.mean(d_losses),
-                                                                                  np.mean(d_on_g_losses)))
+                f.write('Epoch: {} Discriminator loss: {} Model loss: {}\n'.format(epoch, np.mean(d_losses),
+                                                                                   np.mean(d_on_g_losses)))
             prog.update(1)
 
             if epoch_num == epoch:
@@ -352,7 +352,7 @@ class GAN:
         frame_width = int(cappy.get(3))
         frame_height = int(cappy.get(4))
         # define codec and create VideoWriter object
-        out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), 30,
+        out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), speed,
                               (frame_width, frame_height))
         count = 0
         prog_bar = tqdm.tqdm(total=length, desc="Deblurring")
