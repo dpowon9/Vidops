@@ -364,7 +364,7 @@ class GAN:
                 image = np.array([self.preprocess_image(frame)])
                 prelim = g.predict(image)
                 frame2 = self.deprocess_image(prelim)
-                im = cv2.resize(frame2[0, :, :, :], (frame_width, frame_height))
+                im = cv2.resize(frame2[0, :, :, :], (frame_width, frame_height), interpolation=cv2.INTER_AREA)
                 out.write(im)
                 prog_bar.update(1)
                 # press `q` to exit
