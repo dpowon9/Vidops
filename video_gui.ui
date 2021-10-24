@@ -29,7 +29,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QGraphicsView" name="graphicsView">
+  <widget class="QGraphicsView" name="window_one">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -39,7 +39,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QGraphicsView" name="graphicsView_2">
+  <widget class="QGraphicsView" name="window_two">
    <property name="geometry">
     <rect>
      <x>350</x>
@@ -61,7 +61,7 @@
    <property name="styleSheet">
     <string notr="true">background-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx:0.5, fy:0.5, stop:0 rgba(0, 169, 255, 147), stop:0.497326 rgba(0, 0, 0, 147), stop:1 rgba(0, 169, 255, 147));</string>
    </property>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="load">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -106,7 +106,7 @@
    <property name="styleSheet">
     <string notr="true">background-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx:0.5, fy:0.5, stop:0 rgba(0, 169, 255, 147), stop:0.497326 rgba(0, 0, 0, 147), stop:1 rgba(0, 169, 255, 147));</string>
    </property>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="play">
     <property name="geometry">
      <rect>
       <x>330</x>
@@ -124,8 +124,8 @@
    </widget>
   </widget>
   <zorder>widget</zorder>
-  <zorder>graphicsView_2</zorder>
-  <zorder>graphicsView</zorder>
+  <zorder>window_two</zorder>
+  <zorder>window_one</zorder>
   <zorder>widget_2</zorder>
   <zorder>widget_3</zorder>
  </widget>
