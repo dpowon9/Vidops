@@ -177,7 +177,7 @@ def play_multiple(*args, size=(300, 300)):
     for i in range(len(window_titles)):
         cv2.namedWindow(window_titles[i])
         cv2.moveWindow(window_titles[i], x, y)
-        x += size[0] + 30
+        x += size[0] + 100
     while True:
         for i, c in enumerate(caps):
             if c is not None:
