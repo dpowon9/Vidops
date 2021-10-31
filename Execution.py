@@ -3,13 +3,15 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QMainWindow, QMessageBox)
 from tkinter import *
 from tkinter import filedialog
 
+import sys
+app = QApplication(sys.argv)
 qtcreator_file = r"C:\Users\Dennis Pkemoi\Desktop\Vidops\User_interface\video.ui"
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtcreator_file)
 
 
 class MyApp(QMainWindow, Ui_MainWindow):
     def __init__(self):
-        QtWidgets.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
         self.video.clicked.connect(self.file_Gui('Video', ext='mp4', directory=False))
@@ -42,8 +44,6 @@ class MyApp(QMainWindow, Ui_MainWindow):
 
 
 if __name__ == "__main__":
-    import sys
-    app = QApplication(sys.argv)
     window = MyApp()
     window.show()
     sys.exit(app.exec_())
