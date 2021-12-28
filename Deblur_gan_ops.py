@@ -323,7 +323,9 @@ class GAN:
         if save:
             im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
         elif show:
-            im.show()
+            im2 = self.deprocess_image(image)
+            disp = PIL.Image.fromarray(np.hstack((im2[0, :, :, :], result[0, :, :, :])))
+            disp.show()
         else:
             return result
 
