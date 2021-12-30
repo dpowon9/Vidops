@@ -132,7 +132,7 @@ class GAN:
         im = PIL.Image.fromarray(img)
         im.save(self.save_dir)
 
-    def load_images(self, limit=True):
+    def load_images(self, limit=False):
         """
         :param limit: Whether to limit the number of input images from a directory. Controlled by self.limiter variable.
         :return: Returns a tuple of blurred(A) and sharp(B) images for GAN input
