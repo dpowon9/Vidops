@@ -10,4 +10,5 @@ opencv==4.5.1
 Note: I recommend installing opencv through anaconda through the conda-forge channel.
 # References
 Significant amount of code on GAN model building and data preprocessing borrowed from Rapael Meudec,                 
-Github repo: https://github.com/RaphaelMeudec/deblur-gan
+Github repo: https://github.com/RaphaelMeudec/deblur-gan                                                                                                                           
+Upscale Models: https://github.com/Saafke/EDSR_Tensorflow.git
