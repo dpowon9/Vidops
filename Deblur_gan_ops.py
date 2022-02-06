@@ -306,7 +306,7 @@ class GAN:
                 im = PIL.Image.fromarray(output.astype(np.uint8))
                 im.save(os.path.join(self.save_dir, image_name))
 
-    def deblur_image(self, save=False, show=True):
+    def deblur_image(self, save=False, outputArray=False):
         """
         :param save: save deblurred image
         :param show: Default, show deblurred image
@@ -322,11 +322,10 @@ class GAN:
         im = PIL.Image.fromarray(result[0, :, :, :])
         if save:
             im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
-        elif show:
-            im2 = self.deprocess_image(image)
-            disp = PIL.Image.fromarray(np.hstack((im2[0, :, :, :], result[0, :, :, :])))
-            disp.show()
-        else:
+        im2 = self.deprocess_image(image)
+        disp = PIL.Image.fromarray(np.hstack((im2[0, :, :, :], result[0, :, :, :])))
+        disp.show()
+        if outputArray:
             return result
 
     def video_deblur(self, play=True):
