@@ -294,32 +294,38 @@ class GAN:
         g = generator_model()
         g.load_weights(self.Path_to_weights)
         for image_name in os.listdir(self.input_dir):
-            image = np.array([self.preprocess_image(self.load_image(os.path.join(self.input_dir, image_name)))])
-            x_test = image
-            generated_images = g.predict(x=x_test)
-            generated = np.array([self.deprocess_image(img) for img in generated_images])
-            x_test = self.deprocess_image(x_test)
-            for i in range(generated_images.shape[0]):
-                x = x_test[i, :, :, :]
-                img = generated[i, :, :, :]
-                output = np.concatenate((x, img), axis=1)
-                im = PIL.Image.fromarray(output.astype(np.uint8))
-                im.save(os.path.join(self.save_dir, image_name))
+            try:
+                old = PIL.Image.open(os.path.join(self.input_dir, image_name))
+                image = np.array([self.preprocess_image(self.load_image(os.path.join(self.input_dir, image_name)))])
+                x_test = image
+                generated_images = g.predict(x=x_test)
+                generated = np.array([self.deprocess_image(img) for img in generated_images])
+                x_test = self.deprocess_image(x_test)
+                for i in range(generated_images.shape[0]):
+                    x = x_test[i, :, :, :]
+                    img = generated[i, :, :, :]
+                    #output = np.concatenate((x, img), axis=1)
+                    im = PIL.Image.fromarray(img.astype(np.uint8))
+                    im.resize(old.size)
+                    im.save(os.path.join(self.save_dir, image_name))
+            except:
+                pass
 
     def deblur_image(self, save=False, outputArray=False):
         """
         :param save: save deblurred image
-        :param show: Default, show deblurred image
         :return: GAN deblurred image
         """
         self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
         g = generator_model()
         g.load_weights(self.Path_to_weights)
         path = self.file_Gui('Image to deblur', ext='jpg', directory=False)
+        old = PIL.Image.open(path)
         image = np.array([self.preprocess_image(self.load_image(path))])
         prelim = g.predict(image)
         result = self.deprocess_image(prelim)
         im = PIL.Image.fromarray(result[0, :, :, :])
+        im.resize(old.size)
         if save:
             im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
         im2 = self.deprocess_image(image)
