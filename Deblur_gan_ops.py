@@ -295,7 +295,6 @@ class GAN:
         g.load_weights(self.Path_to_weights)
         for image_name in os.listdir(self.input_dir):
             try:
-                old = PIL.Image.open(os.path.join(self.input_dir, image_name))
                 image = np.array([self.preprocess_image(self.load_image(os.path.join(self.input_dir, image_name)))])
                 x_test = image
                 generated_images = g.predict(x=x_test)
@@ -306,7 +305,6 @@ class GAN:
                     img = generated[i, :, :, :]
                     #output = np.concatenate((x, img), axis=1)
                     im = PIL.Image.fromarray(img.astype(np.uint8))
-                    im.resize(old.size)
                     im.save(os.path.join(self.save_dir, image_name))
             except:
                 pass
@@ -320,12 +318,10 @@ class GAN:
         g = generator_model()
         g.load_weights(self.Path_to_weights)
         path = self.file_Gui('Image to deblur', ext='jpg', directory=False)
-        old = PIL.Image.open(path)
         image = np.array([self.preprocess_image(self.load_image(path))])
         prelim = g.predict(image)
         result = self.deprocess_image(prelim)
         im = PIL.Image.fromarray(result[0, :, :, :])
-        im.resize(old.size)
         if save:
             im.save(os.path.join(self.file_Gui('path to save'), "deblurred{}.jpg".format(random.randint(0, 100))))
         im2 = self.deprocess_image(image)

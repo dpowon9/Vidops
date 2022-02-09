@@ -71,7 +71,7 @@ def super_res(img, scale, model="edsr"):
 
 if __name__ == "__main__":
     # Original image
-    img = cv2.imread(r"C:\Users\Dennis Pkemoi\Desktop\Vidops\Examples\deblurred72.jpg")
+    img = cv2.imread(r"C:\Users\Dennis Pkemoi\Desktop\Vidops\Examples\deblurred45.jpg")
     cv2.imshow("original Image", img)
     # Upscale
     model = "lapsrn"
