@@ -1,37 +1,85 @@
 import cv2
 import matplotlib.pyplot as plt
 
-def super_res(img, scale):
+def super_res(img, scale, model="edsr"):
+    """
+    models: edsr(2, 3, 4), espcn(2, 3, 4), fsrcnn(2, 3, 4), lapsrn(2, 4, 8)
+    """
     sr = cv2.dnn_superres.DnnSuperResImpl_create()
-    if scale == 2:
-        path = "SuperResModels\EDSR_x2.pb"
-        sr.readModel(path)
-        sr.setModel("edsr",2)
-    elif scale == 3:
-        path = "SuperResModels\EDSR_x3.pb"
-        sr.readModel(path)
-        sr.setModel("edsr",3)
-    elif scale == 4:
-        path = "SuperResModels\EDSR_x4.pb"
-        sr.readModel(path)
-        sr.setModel("edsr",4)
+    if model == "edsr":
+        if scale == 2:
+            path = "SuperResModels\EDSR_x2.pb"
+            sr.readModel(path)
+            sr.setModel("edsr",2)
+        elif scale == 3:
+            path = "SuperResModels\EDSR_x3.pb"
+            sr.readModel(path)
+            sr.setModel("edsr",3)
+        elif scale == 4:
+            path = "SuperResModels\EDSR_x4.pb"
+            sr.readModel(path)
+            sr.setModel("edsr",4)
+        else:
+            print("EDSR models only scale at 2x, 3x, and 4x")
+    elif model == "espcn":
+        if scale == 2:
+            path = "SuperResModels\ESPCN_x2.pb"
+            sr.readModel(path)
+            sr.setModel("espcn",2)
+        elif scale == 3:
+            path = "SuperResModels\ESPCN_x3.pb"
+            sr.readModel(path)
+            sr.setModel("espcn",3)
+        elif scale == 4:
+            path = "SuperResModels\ESPCN_x4.pb"
+            sr.readModel(path)
+            sr.setModel("espcn",4)
+        else:
+            print("ESPCN models only scale at 2x, 3x, and 4x")
+    elif model == "fsrcnn":
+        if scale == 2:
+            path = "SuperResModels\FSRCNN_x2.pb"
+            sr.readModel(path)
+            sr.setModel("fsrcnn",2)
+        elif scale == 3:
+            path = "SuperResModels\FSRCNN_x3.pb"
+            sr.readModel(path)
+            sr.setModel("fsrcnn",3)
+        elif scale == 4:
+            path = "SuperResModels\FSRCNN_x4.pb"
+            sr.readModel(path)
+            sr.setModel("fsrcnn",4)
+        else:
+            print("FSRCNN models only scale at 2x, 3x, and 4x")
+    elif model == "lapsrn":
+        if scale == 2:
+            path = "SuperResModels\LapSRN_x2.pb"
+            sr.readModel(path)
+            sr.setModel("lapsrn",2)
+        elif scale == 4:
+            path = "SuperResModels\LapSRN_x4.pb"
+            sr.readModel(path)
+            sr.setModel("lapsrn",4)
+        elif scale == 8:
+            path = "SuperResModels\LapSRN_x8.pb"
+            sr.readModel(path)
+            sr.setModel("lapsrn",8)
+        else:
+            print("LapSRN models only scale at 2x, 4x, and 8x")
     result = sr.upsample(img)
     return result[:,:,::-1]
 
 if __name__ == "__main__":
-    img = cv2.imread(r"C:\Users\Dennis Pkemoi\Desktop\Vidops\Examples\deblurred72.jpg")
     # Original image
-    plt.imshow(img[:,:,::-1])
-    plt.title("Original Image")
-   # OpenCV upscaled
-    resized = cv2.resize(img, dsize=None, fx=4, fy=4)
-    fig3 = plt.figure()
-    plt.imshow(resized[:,:,::-1])
-    plt.title("OpenCV upscaled")
-    # SR upscaled
-    fig2 = plt.figure()
-    plt.imshow(super_res(img, 4))
-    plt.axis("off")
-    plt.savefig("Examples\super_res_SR_4.jpg")
-    plt.show()
+    img = cv2.imread(r"C:\Users\Dennis Pkemoi\Desktop\Vidops\Examples\deblurred72.jpg")
+    cv2.imshow("original Image", img)
+    # Upscale
+    model = "lapsrn"
+    scale = 8
+    res = super_res(img, scale=scale, model=model)
+    cv2.imshow("Super Resolution", res)
+    cv2.imwrite("Examples\{}_{}.jpg".format(model, str(scale)), res)
+    cv2.waitKey(0)
+
+
     
