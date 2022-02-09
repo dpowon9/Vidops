@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 
 def super_res(img, scale, model="edsr"):
     """
-    models: edsr(2, 3, 4), espcn(2, 3, 4), fsrcnn(2, 3, 4), lapsrn(2, 4, 8)
+    img: Input image array
+    models: edsr(scale: 2, 3, 4), espcn(scale: 2, 3, 4), fsrcnn(scale: 2, 3, 4), lapsrn(scale: 2, 4, 8)
     """
     sr = cv2.dnn_superres.DnnSuperResImpl_create()
     if model == "edsr":
