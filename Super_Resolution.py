@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 def super_res(img, scale):
     sr = cv2.dnn_superres.DnnSuperResImpl_create()
     if scale == 2:
-        path = "EDSR_x2.pb"
+        path = "SuperResModels\EDSR_x2.pb"
         sr.readModel(path)
         sr.setModel("edsr",2)
     elif scale == 3:
-        path = "EDSR_x3.pb"
+        path = "SuperResModels\EDSR_x3.pb"
         sr.readModel(path)
         sr.setModel("edsr",3)
     elif scale == 4:
-        path = "EDSR_x4.pb"
+        path = "SuperResModels\EDSR_x4.pb"
         sr.readModel(path)
         sr.setModel("edsr",4)
     result = sr.upsample(img)
