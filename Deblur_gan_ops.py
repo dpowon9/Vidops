@@ -342,7 +342,7 @@ class GAN:
             g.load_weights(self.Path_to_weights)
         mode = self.file_Gui('Blurred Video', ext='mp4', directory=False)
         path, name = os.path.split(mode)
-        vid_out = os.path.join(path, "GAN_Sharpened_{}_{}.mp4".format(random.randint(0, 100), name))
+        vid_out = os.path.join(path, "GAN_Sharpened_{}_{}".format(random.randint(0, 100), name))
         cappy = cv2.VideoCapture(mode)
         if not cappy.isOpened():
             print("Error opening video file")
