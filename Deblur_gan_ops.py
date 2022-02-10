@@ -17,6 +17,7 @@ from tkinter import *
 from tkinter import filedialog
 from Video_functions import play_multiple
 from tkinter import messagebox
+from Super_Resolution import super_res
 
 
 class GAN:
@@ -330,17 +331,18 @@ class GAN:
         if outputArray:
             return result
 
-    def video_deblur(self, play=True):
+    def video_deblur(self, play=True, scale=4, model="fsrcnn", upscaleOnly=False):
         """
         :param play: Default True, whether to play video after deblurring. Plays side by side with original
         :return: Returns a saved deblurred video
         """
-        self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
+        if not upscaleOnly:
+            self.Path_to_weights = self.file_Gui('Model', ext='h5', directory=False)
+            g = generator_model()
+            g.load_weights(self.Path_to_weights)
         mode = self.file_Gui('Blurred Video', ext='mp4', directory=False)
         path, name = os.path.split(mode)
         vid_out = os.path.join(path, "GAN_Sharpened_{}_{}.mp4".format(random.randint(0, 100), name))
-        g = generator_model()
-        g.load_weights(self.Path_to_weights)
         cappy = cv2.VideoCapture(mode)
         if not cappy.isOpened():
             print("Error opening video file")
@@ -351,23 +353,32 @@ class GAN:
         # Get video speed in frames per second
         speed = int(cappy.get(cv2.CAP_PROP_FPS))
         print('The input video plays at %d fps.' % speed)
-        # Read until video is completed
         frame_width = int(cappy.get(3))
         frame_height = int(cappy.get(4))
         # define codec and create VideoWriter object
-        out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), speed,
-                              (frame_width, frame_height))
+        if upscaleOnly:
+            out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), speed,
+                              (scale*frame_width, scale*frame_height))
+        else:
+            out = cv2.VideoWriter(vid_out, cv2.VideoWriter_fourcc(*'mp4v'), speed,
+                                (scale*256, scale*256))
         count = 0
         prog_bar = tqdm.tqdm(total=length, desc="Deblurring")
         while cappy.isOpened():
             ret, frame = cappy.read()
             if ret:
-                # Always make sure your frame is a PIL image array before processing it
-                frame = PIL.Image.fromarray(frame)
-                image = np.array([self.preprocess_image(frame)])
-                prelim = g.predict(image)
-                frame2 = self.deprocess_image(prelim)
-                im = cv2.resize(frame2[0, :, :, :], (frame_width, frame_height), interpolation=cv2.INTER_AREA)
+                if upscaleOnly:
+                    im = super_res(frame, scale, model=model)
+                    im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
+                else:
+                    # Always make sure your frame is a PIL image array before processing it
+                    frame = PIL.Image.fromarray(frame)
+                    image = np.array([self.preprocess_image(frame)])
+                    prelim = g.predict(image)
+                    frame2 = self.deprocess_image(prelim)
+                    #im = cv2.resize(frame2[0, :, :, :], (frame_width, frame_height), interpolation=cv2.INTER_AREA)
+                    im = super_res(frame2[0, :, :, :], scale, model=model)
+                    im = cv2.cvtColor(im, cv2.COLOR_RGB2BGR)
                 out.write(im)
                 prog_bar.update(1)
                 # press `q` to exit
@@ -385,5 +396,6 @@ class GAN:
         cappy.release()
         out.release()
         cv2.destroyAllWindows()
+        print("Video saved to: ", vid_out)
         if play:
             play_multiple(mode, vid_out)
