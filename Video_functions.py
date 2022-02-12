@@ -199,5 +199,5 @@ def play_multiple(*args, size=(500, 500)):
 
 if __name__ == "__main__":
     orig = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_OriginalDeblurTask.mp4"
-    upscaled = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_10_GAN_Sharpened_OriginalDeblurTask.mp4.mp4"
+    upscaled = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_95_GAN_Sharpened_OriginalDeblurTask.mp4"
     play_multiple(orig, upscaled)
