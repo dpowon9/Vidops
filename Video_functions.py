@@ -144,7 +144,7 @@ def smooth(mode, vid_out, play=True, sigma=20):
         play_multiple(mode, vid_out)
 
 
-def play_multiple(*args, size=(300, 300)):
+def play_multiple(*args, size=(500, 500)):
     """
     :param args: Videos  to play
     :param size: Size of video windows
@@ -196,3 +196,8 @@ def play_multiple(*args, size=(300, 300)):
         if c is not None:
             c.release()
     cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    orig = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_OriginalDeblurTask.mp4"
+    upscaled = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_10_GAN_Sharpened_OriginalDeblurTask.mp4.mp4"
+    play_multiple(orig, upscaled)
