@@ -71,12 +71,12 @@ def super_res(img, scale, model="edsr"):
 
 if __name__ == "__main__":
     # Original image
-    img = cv2.imread(r"C:\Users\Dennis Pkemoi\Desktop\Vidops\Examples\deblurred45.jpg")
+    img = cv2.imread(r"C:\Users\Dennis Pkemoi\Pictures\Camera Roll\PythonTestImage.jpg")
     cv2.imshow("original Image", img)
     # Upscale
-    model = "lapsrn"
-    scale = 8
-    res = super_res(img, scale=scale, model=model)
+    model = "fsrcnn"
+    scale = 4
+    res = cv2.cvtColor(super_res(img, scale=scale, model=model), cv2.COLOR_BGR2RGB)
     cv2.imshow("Super Resolution", res)
     cv2.imwrite("Examples\{}_{}.jpg".format(model, str(scale)), res)
     cv2.waitKey(0)
