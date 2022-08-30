@@ -1,4 +1,3 @@
-from email.mime import image
 from Deblur_gan_ops import GAN
 from PIL import Image as im
 import numpy as np
@@ -7,6 +6,7 @@ import pywt
 import matplotlib.pyplot as plt
 
 path = r"C:\Users\Dennis Pkemoi\Pictures\Camera Roll\PythonTestImage.jpg"
+"""
 img = im.open(path)
 img.show(title="original")
 img = np.array(img)
@@ -33,8 +33,7 @@ out.show()
 plt.imshow(arr, cmap="gray_r", vmin=-0.25, vmax=0.75)
 plt.rcParams["figure.figsize"] = [16, 16]
 plt.show()
-
-"""
+------------------------------------------------------------------------------------------------------------------
 background = median_filter(img, size=3)
 print(background.shape)
 fore = img - background
@@ -49,8 +48,5 @@ fore = im.fromarray(fore)
 fore.show(title="foreground")
 resampled = im.fromarray((resampled * 255).astype(np.uint8))
 resampled.show()
-#worker = GAN()
-#worker.deblur_image(save=True)
-# worker.video_deblur(model="lapsrn", scale=8)
-# worker.deblur_directory()
+-------------------------------------------------------------------------------------------------------------------
 """

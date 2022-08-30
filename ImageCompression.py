@@ -9,5 +9,5 @@ def compressMe(file):
   
 
 if __name__ == "__main__":
-    path = r"C:\Users\Dennis Pkemoi\Pictures\Camera Roll\PythonTestImage.jpg"
+    path = r"C:\Users\Dennis Pkemoi\Pictures\Camera Roll\Free Raw Files - Tag @signatureeditsco APG_0323.CR2"
     compressMe(path)

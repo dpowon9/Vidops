@@ -399,3 +399,7 @@ class GAN:
         print("Video saved to: ", vid_out)
         if play:
             play_multiple(mode, vid_out)
+
+if __name__ == "__main__":
+    worker = GAN()
+    worker.deblur_image(save=True)

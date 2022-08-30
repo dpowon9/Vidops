@@ -198,6 +198,7 @@ def play_multiple(*args, size=(500, 500)):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    orig = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_OriginalDeblurTask.mp4"
-    upscaled = r"C:\Users\Dennis Pkemoi\Videos\Python_practice\GAN_Sharpened_95_GAN_Sharpened_OriginalDeblurTask.mp4"
-    play_multiple(orig, upscaled)
+    img = r"C:\Users\Dennis Pkemoi\Pictures\Camera Roll\Dennispics10.jpg"
+    rgb = cv2.imread(img)
+    blurred = blur_meth(rgb, 'MEDIAN')
+    cv2.imwrite("TestBlurred.png", blurred)
