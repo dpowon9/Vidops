@@ -18,24 +18,27 @@ resized= test.resize([256, 256])
 #resized.show()
 resized = np.array(resized)
 row, col = resized.shape
-print(resized[-1, -1])
-print(row)
 count = 8
-splitres = []
-subarr = np.zeros((8,8))
-for i, j in zip(range(row), range(col)):
-    subarr = resized[i:count, j:count]
-    splitres.append(subarr)
-    j = count
-    i = count
-    print("Grid made, count: ", count)
-    if count == row:
-        print(i, j)
-        break
-    count += 8
-print(splitres[0].shape)
+
+def ressample(arr, N):
+    A = []
+    for v in np.vsplit(arr, arr.shape[0] // N):
+        A.extend([*np.hsplit(v, arr.shape[0] // N)])
+    return np.array(A)
+
+splitres = ressample(resized, 8)
+print(splitres.shape)
 
 """
+while i <= row:
+    print("Grid made, count: ", i)
+    chunk = resized[i:count, i:count]
+    med = np.median(chunk)
+    medSub = np.full(chunk.shape, med)
+    if count  == row:
+        break
+    i = count
+    count += 8
 n, w = 2, "db1"
 coeffs = pywt.wavedec2(gray_img, wavelet=w, level=n)
 
