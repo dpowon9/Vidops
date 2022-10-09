@@ -6,7 +6,7 @@ import pywt
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings("ignore")
-path = r"C:\Users\Dennis Pkemoi\Pictures\Camera Roll\PythonTestImage.jpg"
+path = r"C:\Users\Dennis Pkemoi\Downloads\balloons_noisy.png"
 img = im.open(path)
 #img.show(title="original")
 img = np.array(img)
@@ -26,8 +26,24 @@ def ressample(arr, N):
         A.extend([*np.hsplit(v, arr.shape[0] // N)])
     return np.array(A)
 
+def reverse(arr, N):
+    B = []
+    #for a in np.
+
 splitres = ressample(resized, 8)
-print(splitres.shape)
+outArr = np.zeros(splitres.shape)
+for i in range(splitres.shape[0]):
+    med = np.median(splitres[i,:,:])
+    outArr[i,:,:] = med
+
+reb1 = np.array(np.vstack(outArr))
+print(reb1.shape)
+"""
+compressed = outArr.reshape(resized.shape)
+compressed = resized-compressed
+compressed = im.fromarray(compressed)
+"""
+#compressed.show()
 
 """
 while i <= row:
