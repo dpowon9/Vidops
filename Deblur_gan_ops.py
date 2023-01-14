@@ -402,4 +402,4 @@ class GAN:
 
 if __name__ == "__main__":
     worker = GAN()
-    worker.deblur_image(save=True)
+    worker.video_deblur()
